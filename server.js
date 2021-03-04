@@ -57,6 +57,7 @@ app.use(requestLogger)
 
 // register route files
 app.use(exampleRoutes)
+app.use(dreamRoutes)
 app.use(userRoutes)
 
 // register error handling middleware
