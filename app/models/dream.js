@@ -5,15 +5,12 @@ const dreamSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  dreamDate: {
-    type: Date
-  },
   description: {
     type: String,
     required: true
   },
   owner: {
-    type: mongoose.SChema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   }

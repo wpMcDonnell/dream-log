@@ -2,9 +2,9 @@ const express = require('express')
 
 const passport = require('passport')
 
-const Dream = require('../models/example')
+const Dream = require('../models/dream')
 
-const customErrors = require('../..lib/custom_errors')
+const customErrors = require('../../lib/custom_errors')
 
 const handle404 = customErrors.handle404
 
@@ -19,10 +19,10 @@ const router = express.Router()
 // INDEX aka GET all
 router.get('/dreams', requireToken, (req, res, next) => {
   Dream.find()
-    .then(examples => {
-      return examples.map(example => example.toObject())
+    .then(dreams => {
+      return dreams.map(dream => dream.toObject())
     })
-    .then(examples => res.status(200).json({ examples: examples }))
+    .then(dreams => res.status(200).json({ dreams: dreams }))
     .catch(next)
 })
 
@@ -30,9 +30,47 @@ router.get('/dreams', requireToken, (req, res, next) => {
 router.get('/dreams/:id', requireToken, (req, res, next) => {
   Dream.findById(req.params.id)
     .then(handle404)
-    .then(example => res.status(200).json({ example: example.toObject() }))
+    .then(dream => res.status(200).json({ dream: dream.toObject() }))
     .catch(next)
 })
 
 // CREATE aka post
-router.post('/dreams')
+router.post('/dreams', requireToken, (req, res, next) => {
+  req.body.dream.owner = req.user.id
+
+  Dream.create(req.body.dream)
+
+    .then(dream => {
+      res.status(201).json({ dream: dream.toObject() })
+    })
+    .catch(next)
+})
+
+// UPDATE aka find by id and UPDATE a single post
+router.patch('/dreams/:id', requireToken, removeBlanks, (req, res, next) => {
+  delete req.body.example.owner
+
+  Dream.findById(req.params.id)
+    .then(handle404)
+    .then(dream => {
+      requireOwnership(req, dream)
+
+      return dream.updateOne(req.body.dream)
+    })
+    .then(() => res.sendStatus(204))
+    .catch(next)
+})
+
+// DELETE
+router.delete('/dreams/:id', requireToken, (req, res, next) => {
+  Dream.findById(req.params.id)
+    .then(handle404)
+    .then(dream => {
+      requireOwnership(req, dream)
+      dream.deleteOne()
+    })
+    .then(() => res.sendStatus(204))
+    .catch(next)
+})
+
+module.exports = router
