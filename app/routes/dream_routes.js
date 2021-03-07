@@ -8,7 +8,7 @@ const customErrors = require('../../lib/custom_errors')
 
 const handle404 = customErrors.handle404
 
-const requireOwnership = customErrors.requireOwnsership
+const requireOwnership = customErrors.requireOwnership
 
 const removeBlanks = require('../../lib/remove_blank_fields')
 
@@ -48,7 +48,7 @@ router.post('/dreams', requireToken, (req, res, next) => {
 
 // UPDATE aka find by id and UPDATE a single post
 router.patch('/dreams/:id', requireToken, removeBlanks, (req, res, next) => {
-  delete req.body.example.owner
+  delete req.body.dream.owner
 
   Dream.findById(req.params.id)
     .then(handle404)
@@ -72,5 +72,21 @@ router.delete('/dreams/:id', requireToken, (req, res, next) => {
     .then(() => res.sendStatus(204))
     .catch(next)
 })
+
+// router.delete('/dreams/:id', requireToken, (req, res, next) => {
+//   // Locate the event
+//   Dream.findById(req.params.id)
+//     // Handle 404s, if the event doesn't exist
+//     .then(handle404)
+//     // Check for ownership
+//     // requireOwnership
+//     .then(dream => requireOwnership(dream, req.user))
+//     // Delete the event ONLY IF ^ is true, we own this event
+//     .then(dream => dream.deleteOne())
+//     // Response
+//     .then(() => res.sendStatus(204))
+//     // Errors
+//     .catch(next)
+// })
 
 module.exports = router

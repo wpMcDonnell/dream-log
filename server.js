@@ -10,6 +10,7 @@ const dreamRoutes = require('./app/routes/dream_routes')
 // require middleware
 const errorHandler = require('./lib/error_handler')
 const requestLogger = require('./lib/request_logger')
+// const customErrors = require('./lib/custom_errors')
 
 // require database configuration logic
 // `db` will be the actual Mongo URI as a string
